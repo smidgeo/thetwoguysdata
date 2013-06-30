@@ -96,6 +96,11 @@ function setUpGraph(stackData) {
     .enter().append('g')
       .attr('class', 'layer')
       .style('fill', function(d, i) { return color(i); });
+
+  var textLayer = svg.selectAll('.textlayer')
+      .data(layers)
+    .enter().append('g')
+      .attr('class', 'textlayer');
    
   var rect = layer.selectAll('rect')
       .data(function(d) { return d; })
@@ -105,7 +110,7 @@ function setUpGraph(stackData) {
       .attr('width', x.rangeBand())
       .attr('height', 0);
 
-  var rectLabel = layer.selectAll('text')
+  var rectLabel = textLayer.selectAll('text')
     .data(function getLabelData(d) {
       return d;
     })
@@ -130,20 +135,34 @@ function setUpGraph(stackData) {
 
   function transitionGrouped() {
     y.domain([0, yGroupMax]);
+
+    function getXOfGroupedDatum(d, i, j) { 
+      return x(d.x) + x.rangeBand() / n * j; 
+    }
+    function getYOfGroupedDatum(d) {
+      return y(d.y);
+    }
  
     rect.transition()
       .duration(500)
       .delay(function(d, i) { return i * 10; })
-      .attr('x', function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
+      .attr('x', getXOfGroupedDatum)
       .attr('width', x.rangeBand() / n)
     .transition()
-      .attr('y', function(d) { return y(d.y); })
+      .attr('y', getYOfGroupedDatum)
       .attr('height', function(d) { return height - y(d.y); });
 
     rectLabel.transition()
       .duration(500)
       .transition()
-        .attr('height', function(d) { return 0; });
+      .attr('x', getXOfGroupedDatum)
+      .attr('y', getYOfGroupedDatum)
+      .attr('transform', function(d, i, j) { 
+        var rectX = getXOfGroupedDatum(d, i, j);
+        var rectY = getYOfGroupedDatum(d);
+        console.log('Calclulated translate for label:', rectX, rectY);
+        return 'rotate(90 ' + rectX + ' ' + rectY + ')'; 
+      });
   }
    
   function transitionStacked() {
@@ -161,7 +180,9 @@ function setUpGraph(stackData) {
     rectLabel.transition()
       .duration(500)
       .transition()
-        .attr('height', function(d) { return 64; });
+        .attr('x', function(d) { return x(d.x); })
+        .attr('y', function(d) { return y(d.y0 + d.y); })
+        .attr('transform', function(d) { return 'rotate:(0) translate(0, 0)'; });
   }
 
   var timeout = setTimeout(function() {
@@ -176,22 +197,3 @@ function setUpGraph(stackData) {
 
 }
  
- 
-// Inspired by Lee Byron's test data generator.
-function bumpLayer(n, o) {
- 
-  function bump(a) {
-    var x = 1 / (.1 + Math.random()),
-        y = 2 * Math.random() - .5,
-        z = 10 / (.1 + Math.random());
-    for (var i = 0; i < n; i++) {
-      var w = (i / n - y) * z;
-      a[i] += x * Math.exp(-w * w);
-    }
-  }
- 
-  var a = [], i;
-  for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
-  for (i = 0; i < 5; ++i) bump(a);
-  return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
-}
