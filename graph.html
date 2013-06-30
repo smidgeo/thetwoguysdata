@@ -77,7 +77,7 @@ function csvRowObjectsToArrays(rows) {
       _.each(groupKeys, function putRowContentsIntoArrays(key) {
         groupsForGroupNames[key].push({
           x: daysElapsed,
-          y: parseFloat(row[key]),
+          y: row[key] ? parseFloat(row[key]) : 0,
           y0: groupKeys.indexOf(key),
           labelText: key
         });
