@@ -42,7 +42,13 @@ function csvRowObjectsToArrays(rows) {
           x: daysElapsed,
           y: row[key] ? parseFloat(row[key]) : 0,
           y0: groupKeys.indexOf(key),
-          labelText: key
+          getLabelText: function getText(d) {
+            var text = null;
+            if (this.y > 0.01) {
+              text = key;
+            }
+            return text;
+          }
         });
       })
     });
@@ -118,13 +124,10 @@ function setUpGraph(stackData) {
       .attr('x', function(d) { return x(d.x); })
       .attr('y', function(d) { return y(d.y); })
       .text(function getText(d) {
-        return d.labelText;
+        return d.getLabelText();
       });
 
-  rect.transition()
-      .delay(function(d, i) { return i * 10; })
-      .attr('y', function(d) { return y(d.y0 + d.y); })
-      .attr('height', function(d) { return y(d.y0) - y(d.y0 + d.y); });
+  transitionStacked();
 
   svg.append('g')
       .attr('class', 'x axis')
@@ -156,7 +159,10 @@ function setUpGraph(stackData) {
       .duration(500)
       .transition()
       .attr('x', getXOfGroupedDatum)
-      .attr('y', getYOfGroupedDatum)
+      .attr('y', function getLabelYOfGroupedDatum(d) {
+        // We are setting this, keeping in mind this is going to be rotated 90º.
+        return getYOfGroupedDatum(d) - (x.rangeBand() / n)/3;
+      })
       .attr('transform', function(d, i, j) { 
         var rectX = getXOfGroupedDatum(d, i, j);
         var rectY = getYOfGroupedDatum(d);
@@ -167,12 +173,19 @@ function setUpGraph(stackData) {
    
   function transitionStacked() {
     y.domain([0, yStackMax]);
+
+    function getHeightOfStackedDatum(d) { 
+      return y(d.y0) - y(d.y0 + d.y); 
+    }
+    function getYOfStackedDatum(d) {
+      return y(d.y0 + d.y); 
+    }
    
     rect.transition()
         .duration(500)
         .delay(function(d, i) { return i * 10; })
-        .attr('y', function(d) { return y(d.y0 + d.y); })
-        .attr('height', function(d) { return y(d.y0) - y(d.y0 + d.y); })
+        .attr('y', getYOfStackedDatum)
+        .attr('height', getHeightOfStackedDatum)
       .transition()
         .attr('x', function(d) { return x(d.x); })
         .attr('width', x.rangeBand());
@@ -181,7 +194,9 @@ function setUpGraph(stackData) {
       .duration(500)
       .transition()
         .attr('x', function(d) { return x(d.x); })
-        .attr('y', function(d) { return y(d.y0 + d.y); })
+        .attr('y', function(d) { 
+          return getYOfStackedDatum(d) + getHeightOfStackedDatum(d)/2;
+        })
         .attr('transform', function(d) { return 'rotate:(0) translate(0, 0)'; });
   }
 
