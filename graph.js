@@ -37,11 +37,32 @@ function csvRowObjectsToArrays(rows) {
       // Save the date string so the axis can use it later.
       xAxisDateStrings.push(xDate.toDateString());
 
+      var currentCategory = null;
+      var numberOfKeysInCategoryProcessed = 0;
+
       _.each(groupKeys, function putRowContentsIntoArrays(key) {
+        // Use the key to find the category.
+        var category = null;
+        var keyParts = key.split(':');
+        if (keyParts.length > 1) {
+          category = keyParts[0];
+
+          if (currentCategory === category) {
+            numberOfKeysInCategoryProcessed += 1;
+          }
+          else {
+            // We hit a new category.
+            currentCategory = category;
+            numberOfKeysInCategoryProcessed = 0;
+          }
+        }
+
         groupsForGroupNames[key].push({
           x: daysElapsed,
           y: row[key] ? parseFloat(row[key]) : 0,
           y0: groupKeys.indexOf(key),
+          category: category,
+          indexWithinCategory: numberOfKeysInCategoryProcessed,
           getLabelText: function getText(d) {
             var text = null;
             if (this.y > 0.01) {
@@ -80,10 +101,10 @@ function setUpGraph(stackData) {
       .domain([0, yStackMax])
       .range([height, 0]);
    
-  var color = d3.scale.linear()
-      .domain([0, n - 1])
-      .range(['#aad', '#556']);
-   
+  var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[4]);
+  var wilyColor = d3.scale.ordinal().range(colorbrewer.Oranges[4]);
+  var sharedColor = d3.scale.ordinal().range(colorbrewer.BuGn[3]);
+
   var xAxis = d3.svg.axis()
       .scale(x)
       .tickSize(0)
@@ -101,7 +122,32 @@ function setUpGraph(stackData) {
       .data(layers)
     .enter().append('g')
       .attr('class', 'layer')
-      .style('fill', function(d, i) { return color(i); });
+      .style('fill', function(d, i) { 
+        var calculated = 'purple';
+        var representatitveCell = d[0];
+
+        if (representatitveCell && 
+          (typeof representatitveCell.category === 'string')) {
+          switch (representatitveCell.category) {
+            case 'Bonus Cat':
+              calculated = bonusColor(representatitveCell.indexWithinCategory);
+              break;
+            case 'Dr. Wily':
+              calculated = wilyColor(representatitveCell.indexWithinCategory);
+              break;
+            case 'Shared':
+              calculated = sharedColor(representatitveCell.indexWithinCategory);
+              break;
+            default:
+              console.log('Could not find a color for', representatitveCell);
+              // debugger;
+          }
+        }
+        else {
+          debugger;
+        }
+        return calculated; 
+      });
 
   var textLayer = svg.selectAll('.textlayer')
       .data(layers)
@@ -166,7 +212,6 @@ function setUpGraph(stackData) {
       .attr('transform', function(d, i, j) { 
         var rectX = getXOfGroupedDatum(d, i, j);
         var rectY = getYOfGroupedDatum(d);
-        console.log('Calclulated translate for label:', rectX, rectY);
         return 'rotate(90 ' + rectX + ' ' + rectY + ')'; 
       });
   }
