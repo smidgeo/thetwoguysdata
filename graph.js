@@ -1,6 +1,8 @@
 var xAxisDateStrings = [];
 
-d3.csv('https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
+d3.csv(
+  // 'Friendship%20chart%20(5).csv',
+  'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
   function onGettingCSV(error, rows) {
   console.log(rows);
   var csvArrays = csvRowObjectsToArrays(rows);
@@ -80,6 +82,12 @@ function csvRowObjectsToArrays(rows) {
 
 var layers = [];
 
+var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[5])
+  // Favor the right side of the Greens array.
+  .domain(d3.range(-2, 3));
+var wilyColor = d3.scale.ordinal().range(colorbrewer.Oranges[5]);
+var sharedColor = d3.scale.ordinal().range(colorbrewer.YlOrRd[7]);
+
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
       m = stackData[0].length, // number of samples per layer
@@ -101,10 +109,6 @@ function setUpGraph(stackData) {
       .domain([0, yStackMax])
       .range([height, 0]);
    
-  var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[4]);
-  var wilyColor = d3.scale.ordinal().range(colorbrewer.Oranges[4]);
-  var sharedColor = d3.scale.ordinal().range(colorbrewer.BuGn[3]);
-
   var xAxis = d3.svg.axis()
       .scale(x)
       .tickSize(0)
