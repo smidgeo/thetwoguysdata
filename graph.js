@@ -173,7 +173,7 @@ function setUpGraph(stackData) {
         return d.getLabelText();
       });
 
-  transitionStacked();
+  transitionGrouped();
 
   svg.append('g')
       .attr('class', 'x axis')
@@ -246,7 +246,7 @@ function setUpGraph(stackData) {
   }
 
   var timeout = setTimeout(function() {
-    d3.select('input[value=\'grouped\']').property('checked', true).each(change);
+    d3.select('input[value=\'stacked\']').property('checked', true).each(change);
   }, 2000);
    
   function change() {
