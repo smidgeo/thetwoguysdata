@@ -3,33 +3,7 @@
 <head>
   <title>Bonus Cat and Dr. Wily Friendship Data</title>
   <meta charset="utf-8">
-  <style>
-   
-  body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    margin: auto;
-    position: relative;
-    width: 960px;
-  }
-   
-  text {
-    font: 10px sans-serif;
-  }
-   
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-   
-  form {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-  }
-   
-  </style>
+  <link rel="stylesheet" type="text/css" href="twoguys.css" />
 </head>
 
 <body>
@@ -41,19 +15,21 @@
 
 <svg id="graph"></svg>
 
-<header>Legend</header>
+<section id="legend">
+  <header>Legend</header>
 
-<ul class="legend">
-  <li id="bonuscat-legend">
-    <svg width="100" height="30"><g></g></svg> Bonus Cat 
-  </li>
-  <li id="drwily-legend">
-    <svg width="100" height="30"><g></g></svg> Dr. Wily
-  </li>
-  <li id="shared-legend">
-    <svg width="100" height="30"><g></g></svg> Shared
-  </li>
-</ul>
+  <ul class="legend">
+    <li id="bonuscat-legend">
+      <svg width="100" height="30"><g></g></svg> Bonus Cat 
+    </li>
+    <li id="drwily-legend">
+      <svg width="100" height="30"><g></g></svg> Dr. Wily
+    </li>
+    <li id="shared-legend">
+      <svg width="100" height="30"><g></g></svg> Shared
+    </li>
+  </ul>
+</section>
 
 <script src="underscore.js"></script>
 <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
