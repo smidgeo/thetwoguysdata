@@ -22,7 +22,8 @@ form {
   top: 10px;
 }
 
-.legend ul {
-  type: none;
+ul.legend {
+  list-style-type: none;
+  margin-left: -2em;
 }
 
