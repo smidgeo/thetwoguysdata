@@ -116,7 +116,7 @@ function setUpGraph(stackData) {
       .orient('bottom')
       .tickValues(xAxisDateStrings);
    
-  var svg = d3.select('svg')
+  var svg = d3.select('svg#graph')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
     .append('g')
@@ -157,7 +157,10 @@ function setUpGraph(stackData) {
       .data(layers)
     .enter().append('g')
       .attr('class', 'textlayer');
-   
+  
+  // TODO: Consider having two rects, one to identify guy, and one to identify 
+  // the activity. Then, split the activities into two color groups: Good and 
+  // bad.
   var rect = layer.selectAll('rect')
       .data(function(d) { return d; })
     .enter().append('rect')
@@ -261,3 +264,20 @@ function setUpGraph(stackData) {
 
 }
  
+function setUpLegend(parentSelString, colors) {
+  d3.select(parentSelString).select('g').selectAll('rect')
+  .data(colors)
+  .enter()
+  .append('rect')  
+  .attr('width', 20)
+  .attr('height', 30)
+  .attr('fill', function getFill(d) { return d; })
+  .attr('y', 0)
+  .attr('x', function(d, i) { return i * 20; });
+}
+
+setUpLegend('#bonuscat-legend', bonusColor.range());
+setUpLegend('#drwily-legend', wilyColor.range());
+setUpLegend('#shared-legend', sharedColor.range());
+
+
