@@ -48,6 +48,7 @@ function csvRowObjectsToArrays(rows) {
         var keyParts = key.split(':');
         if (keyParts.length > 1) {
           category = keyParts[0];
+          var activity = keyParts[1];
 
           if (currentCategory === category) {
             numberOfKeysInCategoryProcessed += 1;
@@ -68,7 +69,7 @@ function csvRowObjectsToArrays(rows) {
           getLabelText: function getText(d) {
             var text = null;
             if (this.y > 0.01) {
-              text = key;
+              text = activity;
             }
             return text;
           }
@@ -82,11 +83,9 @@ function csvRowObjectsToArrays(rows) {
 
 var layers = [];
 
-var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[5])
-  // Favor the right side of the Greens array.
-  .domain(d3.range(-2, 3));
+var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[5].slice(2, 5));
 var wilyColor = d3.scale.ordinal().range(colorbrewer.Oranges[5]);
-var sharedColor = d3.scale.ordinal().range(colorbrewer.YlOrRd[7]);
+var sharedColor = d3.scale.ordinal().range(colorbrewer.YlOrRd[7].slice(0, 3));
 
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
