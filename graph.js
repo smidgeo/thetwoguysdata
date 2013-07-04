@@ -1,18 +1,55 @@
 var xAxisDateStrings = [];
 
+var dateOfLastAttack = null;
+var dateOfLastHiss = null;
+
+function fetchDateOfLastEvent(csvRows, eventName) {
+  var date = null;
+  // csvRows are in ascending date order.
+  for (var i = csvRows.length - 1; i >= 0; --i) {
+    if (parseInt(csvRows[i][eventName]) > 0) {
+      date = parseMMDDYY(csvRows[i]['Date']);
+      break;
+    }
+  }
+  return date;
+}
+
+function daysSinceDate(pastDate) {
+  var days = 0;
+  if (pastDate) {
+    days = 
+      ~~(
+        (Date.now() - pastDate.getTime())/(24 * 60 * 60 * 1000)
+      );
+  }
+  return days;
+}
+
+
 d3.csv(
   // 'Friendship%20chart%20(5).csv',
   'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
   function onGettingCSV(error, rows) {
-  console.log(rows);
-  var csvArrays = csvRowObjectsToArrays(rows);
-  console.log('csvArrays', csvArrays);
-  setUpGraph(csvArrays);
-});
+    console.log(rows);
+    var csvArrays = csvRowObjectsToArrays(rows);
+    console.log('csvArrays', csvArrays);
+    setUpGraph(csvArrays);
+
+    $('#dateoflastattack').text(daysSinceDate(
+        fetchDateOfLastEvent(rows, 'Dr. Wily: Attack')
+      )
+    );
+    $('#dateoflasthiss').text(daysSinceDate(
+        fetchDateOfLastEvent(rows, 'Bonus Cat: Hiss')
+      )
+    );
+  }
+);
 
 function parseMMDDYY(dateString) {
   var dateParts = dateString.split('/');
-  return new Date(dateParts[2], dateParts[0], dateParts[1])
+  return new Date(dateParts[2], dateParts[0] - 1, dateParts[1])
 }
 
 function csvRowObjectsToArrays(rows) {
