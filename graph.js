@@ -82,7 +82,7 @@ function csvRowObjectsToArrays(rows) {
       _.each(groupKeys, function putRowContentsIntoArrays(key) {
         // Use the key to find the category.
         var category = null;
-        var keyParts = key.split(':');
+        var keyParts = key.split(': ');
         if (keyParts.length > 1) {
           category = keyParts[0];
           var activity = keyParts[1];
@@ -102,6 +102,7 @@ function csvRowObjectsToArrays(rows) {
           y: row[key] ? parseFloat(row[key]) : 0,
           y0: groupKeys.indexOf(key),
           category: category,
+          activity: activity,
           indexWithinCategory: numberOfKeysInCategoryProcessed,
           getLabelText: function getText(d) {
             var text = null;
@@ -186,6 +187,14 @@ function setUpGraph(stackData) {
         else {
           debugger;
         }
+
+        // Going to make exceptions to the color schemes for hostile events' 
+        // layers.
+        if (representatitveCell.activity === 'Attack' || 
+          representatitveCell.activity === 'Hiss') {
+          calculated = '#e42';
+        }
+
         return calculated; 
       });
 
