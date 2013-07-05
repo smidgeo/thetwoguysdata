@@ -5,10 +5,6 @@ body {
   width: 960px;
 }
  
-text {
-  font: 10px sans-serif;
-}
- 
 .axis path,
 .axis line {
   fill: none;
@@ -67,4 +63,17 @@ ul.legend {
 
 #legend {
   margin-left: 1em
+}
+
+text {
+  font-face: sans-serif;
+  fill: #fff;
+}
+
+text.stacked {
+  font-size: 14px
+}
+
+text.grouped {
+  font-size: 10px;
 }
