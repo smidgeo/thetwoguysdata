@@ -153,7 +153,7 @@ var themes = {
 }
 
 var selectedTheme = 'rainbow';
-selectedTheme = 'blackandwhite';
+// selectedTheme = 'blackandwhite';
 
 // Set up color generating functions.
 
