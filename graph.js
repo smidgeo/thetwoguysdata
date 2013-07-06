@@ -2,6 +2,7 @@ var xAxisDateStrings = [];
 
 var dateOfLastAttack = null;
 var dateOfLastHiss = null;
+var stackedOrGrouped = 'grouped';
 
 function fetchDateOfLastEvent(csvRows, eventName) {
   var date = null;
@@ -28,7 +29,7 @@ function daysSinceDate(pastDate) {
 
 
 d3.csv(
-  // 'Friendship%20chart%20(5).csv',
+  // 'Friendship%20chart.csv',
   'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
   function onGettingCSV(error, rows) {
     console.log(rows);
@@ -121,9 +122,49 @@ function csvRowObjectsToArrays(rows) {
 
 var layers = [];
 
-var bonusColor = d3.scale.ordinal().range(colorbrewer.Greens[5].slice(2, 5));
-var wilyColor = d3.scale.ordinal().range(colorbrewer.Oranges[5]);
-var sharedColor = d3.scale.ordinal().range(colorbrewer.YlOrRd[7].slice(0, 3));
+
+var themes = {
+  rainbow: {
+    colorRanges: {
+      'Bonus Cat': colorbrewer.Greens[5].slice(2, 5),
+      'Dr. Wily': colorbrewer.Oranges[5],
+      Shared: colorbrewer.YlOrRd[7].slice(0, 3)      
+    },
+    stroke: 'none',
+    textColor: {
+      'Bonus Cat': '#fff',
+      'Dr. Wily': '#fff',
+      Shared: '#fff'
+    }
+  },
+  blackandwhite: {
+    colorRanges: {
+      'Bonus Cat': ['#fff', '#fff', '#fff'],
+      'Dr. Wily': ['#181810', '#181810', '#181810', '#181810', '#181810'],
+      Shared: colorbrewer.Greys[9].slice(4, 7)
+    },
+    stroke: '#333',
+    textColor: {
+      'Bonus Cat': '#333',
+      'Dr. Wily': '#fff',
+      Shared: '#fff'
+    }
+  }
+}
+
+var selectedTheme = 'rainbow';
+selectedTheme = 'blackandwhite';
+
+// Set up color generating functions.
+
+var bonusColor = d3.scale.ordinal().range(
+  themes[selectedTheme].colorRanges['Bonus Cat']);
+
+var wilyColor = d3.scale.ordinal().range(
+  themes[selectedTheme].colorRanges['Dr. Wily']);
+
+var sharedColor = d3.scale.ordinal().range(
+  themes[selectedTheme].colorRanges.Shared);
 
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
@@ -192,7 +233,7 @@ function setUpGraph(stackData) {
         // layers.
         if (representatitveCell.activity === 'Attack' || 
           representatitveCell.activity === 'Hiss') {
-          calculated = '#e42';
+          calculated = '#f21';
         }
 
         return calculated; 
@@ -212,7 +253,8 @@ function setUpGraph(stackData) {
       .attr('x', function(d) { return x(d.x); })
       .attr('y', height)
       .attr('width', x.rangeBand())
-      .attr('height', 0);
+      .attr('height', 0)
+      .attr('stroke', themes[selectedTheme].stroke);
 
   var rectLabel = textLayer.selectAll('text')
     .data(function getLabelData(d) {
@@ -223,6 +265,9 @@ function setUpGraph(stackData) {
       .attr('y', function(d) { return y(d.y); })
       .text(function getText(d) {
         return d.getLabelText();
+      })
+      .attr('fill', function(d) {
+        return themes[selectedTheme].textColor[d.category];
       });
 
   transitionGrouped();
@@ -265,7 +310,8 @@ function setUpGraph(stackData) {
         var rectX = getXOfGroupedDatum(d, i, j);
         var rectY = getYOfGroupedDatum(d);
         return 'rotate(90 ' + rectX + ' ' + rectY + ')'; 
-      });
+      })
+      .attr('font-size', 10);
   }
    
   function transitionStacked() {
@@ -294,7 +340,8 @@ function setUpGraph(stackData) {
         .attr('y', function(d) { 
           return getYOfStackedDatum(d) + getHeightOfStackedDatum(d)/2;
         })
-        .attr('transform', function(d) { return 'rotate:(0) translate(0, 0)'; });
+        .attr('transform', function(d) { return 'rotate:(0) translate(0, 0)'; })
+        .attr('font-size', 14)
   }
 
   var timeout = setTimeout(function() {
@@ -303,8 +350,14 @@ function setUpGraph(stackData) {
    
   function change() {
     clearTimeout(timeout);
-    if (this.value === 'grouped') transitionGrouped();
-    else transitionStacked();
+
+    stackedOrGrouped = this.value;
+    if (this.value === 'grouped') {
+      transitionGrouped();
+    }
+    else {
+      transitionStacked();
+    }
   }
 
 }

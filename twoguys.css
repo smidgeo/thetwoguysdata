@@ -67,13 +67,8 @@ ul.legend {
 
 text {
   font-face: sans-serif;
-  fill: #fff;
 }
 
-text.stacked {
-  font-size: 14px
-}
-
-text.grouped {
+.tick text {
   font-size: 10px;
 }
