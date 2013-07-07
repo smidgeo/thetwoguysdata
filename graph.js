@@ -234,7 +234,7 @@ var hostilityColor = d3.scale.ordinal().range(
   themes[selectedTheme].colorRanges.Hostility);
 
 function getFillForLayerGroup(d) { 
-  var calculated = 'purple';
+  var calculated = '#f0f';
   var representatitveCell = d[0];
 
   if (representatitveCell && 
@@ -262,7 +262,8 @@ function getFillForLayerGroup(d) {
   }
 
   if (Session.spotlightedLayer && Session.spotlightedLayer !== d) {
-    calculated = '#333';
+    // Shade the color to make it darker.    
+    calculated = d3.rgb(calculated).darker(3).toString();
   }
 
   return calculated; 
