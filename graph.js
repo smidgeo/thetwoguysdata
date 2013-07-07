@@ -134,8 +134,8 @@ var themes = {
     stroke: 'none',
     textColor: {
       'Bonus Cat': '#fff',
-      'Dr. Wily': '#fff',
-      Shared: '#fff'
+      'Dr. Wily': '#333',
+      Shared: '#333'
     }
   },
   blackandwhite: {
