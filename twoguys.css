@@ -3,6 +3,8 @@ body {
   margin: auto;
   position: relative;
   width: 100%;
+  background-color: #fff;
+  color: #333;
 }
  
 .axis path,
@@ -10,6 +12,10 @@ body {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+#graph {
+  border: 2px dashed #666;
 }
 
 section {
@@ -64,6 +70,7 @@ text {
 
 .tick text {
   font-size: 10px;
+  fill: #333;
 }
 
 .celllabel {
