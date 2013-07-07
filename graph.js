@@ -263,7 +263,7 @@ function getFillForLayerGroup(d) {
 
   if (Session.spotlightedLayer && Session.spotlightedLayer !== d) {
     // Shade the color to make it darker.    
-    calculated = d3.rgb(calculated).darker(3).toString();
+    calculated = d3.rgb(calculated).darker(3.5).toString();
   }
 
   return calculated; 
