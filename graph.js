@@ -1,8 +1,10 @@
-var xAxisDateStrings = [];
+var Session = {
+  xAxisDateStrings: [],
+  dateOfLastAttack: null,
+  dateOfLastHiss: null,
+  stackedOrGrouped: 'grouped'
+};
 
-var dateOfLastAttack = null;
-var dateOfLastHiss = null;
-var stackedOrGrouped = 'grouped';
 var labelMargin = 6;
 
 var preferredCategoryOrder = [
@@ -66,11 +68,11 @@ d3.csv(
     console.log('csvArrays', csvArrays);
     setUpGraph(csvArrays);
 
-    $('#dateoflastattack').text(daysSinceDate(
+    $('#Session.dateOfLastAttack').text(daysSinceDate(
         fetchDateOfLastEvent(rows, 'Hostility: Dr. Wily Attack')
       )
     );
-    $('#dateoflasthiss').text(daysSinceDate(
+    $('#Session.dateOfLastHiss').text(daysSinceDate(
         fetchDateOfLastEvent(rows, 'Hostility: Bonus Cat Hiss')
       )
     );
@@ -149,7 +151,7 @@ function csvRowObjectsToArrays(rows) {
       var daysElapsed = (xTime - startTime)/1000/(24 * 60 * 60);
 
       // SIDE EFFECT! Save the date string so the axis can use it later.
-      xAxisDateStrings.push(xDate.toDateString());
+      Session.xAxisDateStrings.push(xDate.toDateString());
 
       var currentCategory = null;
       var numberOfKeysInCategoryProcessed = 0;
@@ -257,7 +259,7 @@ function setUpGraph(stackData) {
       .tickSize(0)
       .tickPadding(6)
       .orient('bottom')
-      .tickValues(xAxisDateStrings);
+      .tickValues(Session.xAxisDateStrings);
    
   var svg = d3.select('svg#graph')
       .attr('width', width + margin.left + margin.right)
@@ -412,7 +414,7 @@ function setUpGraph(stackData) {
   function change() {
     clearTimeout(timeout);
 
-    stackedOrGrouped = this.value;
+    Session.stackedOrGrouped = this.value;
     if (this.value === 'grouped') {
       transitionGrouped();
     }
