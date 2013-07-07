@@ -278,6 +278,20 @@ function setUpGraph(stackData) {
       yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
   // console.log(stackData);
    
+  function clearSpotlighting() {
+    Session.spotlightedLayer = null;
+    layer.style('fill', getFillForLayerGroup)
+
+    d3.select('body')
+      .style('background-color', '#fff')
+      .style('color', '#333');
+
+    d3.selectAll('.tick text').transition()
+      .duration(500)
+      .delay(300)
+      .style('fill', '#333');
+  }
+
   var margin = {top: 40, right: 10, bottom: 20, left: 10},
       width = 1280 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
@@ -302,51 +316,40 @@ function setUpGraph(stackData) {
       .attr('height', height + margin.top + margin.bottom)
     .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-   
+
   var layer = svg.selectAll('.layer')
       .data(layers)
     .enter().append('g')
       .attr('class', 'layer')
       .style('fill', getFillForLayerGroup)
       .on('click', function layerClicked(d) {
+        d3.event.stopPropagation();
+
         if (Session.spotlightedLayer === d) {
           Session.spotlightedLayer = null;
+          clearSpotlighting();
         }
         else {
           Session.spotlightedLayer = d;
+
+          layer.transition()
+            .duration(500)
+            .delay(function(d, i) { return i * 10; })
+            .style('fill', getFillForLayerGroup);
+
+          d3.select('body').transition()
+            .delay(200)
+            .style('background-color', '#242425')
+            .style('color', '#eee');
+
+          d3.selectAll('.tick text').transition()
+            .duration(500)
+            .delay(300)
+            .style('fill', '#ccc');          
         }
-        d3.event.stopPropagation();
-        layer.transition()
-          .duration(500)
-          .delay(function(d, i) { return i * 10; })
-          .style('fill', getFillForLayerGroup);
-
-        d3.select('body').transition()
-          .delay(200)
-          .style('background-color', '#242425')
-          .style('color', '#eee');
-
-        d3.selectAll('.tick text').transition()
-          .duration(500)
-          .delay(300)
-          .style('fill', '#ccc');
       });
 
-  // Clear any spotlighting.
-  d3.select('#graph').on('click', function svgClicked() {
-    Session.spotlightedLayer = null;
-    layer.style('fill', getFillForLayerGroup)
-
-  d3.select('body')
-    .style('background-color', '#fff')
-    .style('color', '#333');
-
-  d3.selectAll('.tick text').transition()
-    .duration(500)
-    .delay(300)
-    .style('fill', '#333');
-
-  });
+  d3.select('html').on('click', clearSpotlighting);
 
   var textLayer = svg.selectAll('.textlayer')
       .data(layers)

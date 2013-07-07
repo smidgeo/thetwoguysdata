@@ -14,10 +14,6 @@ body {
   shape-rendering: crispEdges;
 }
 
-#graph {
-  border: 2px dashed #666;
-}
-
 section {
   display: -webkit-box;   /* OLD: Safari,  iOS, Android browser, older WebKit browsers.  
   display: -moz-box;      /* OLD: Firefox (buggy) */ 
@@ -70,6 +66,7 @@ text {
 
 .tick text {
   font-size: 10px;
+  font-weight: bold;
   fill: #333;
 }
 
