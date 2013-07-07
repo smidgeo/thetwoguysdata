@@ -316,13 +316,36 @@ function setUpGraph(stackData) {
           Session.spotlightedLayer = d;
         }
         d3.event.stopPropagation();
-        layer.style('fill', getFillForLayerGroup)
+        layer.transition()
+          .duration(500)
+          .delay(function(d, i) { return i * 10; })
+          .style('fill', getFillForLayerGroup);
+
+        d3.select('body').transition()
+          .delay(200)
+          .style('background-color', '#242425')
+          .style('color', '#eee');
+
+        d3.selectAll('.tick text').transition()
+          .duration(500)
+          .delay(300)
+          .style('fill', '#ccc');
       });
 
+  // Clear any spotlighting.
   d3.select('#graph').on('click', function svgClicked() {
-    // Clear any spotlighting.
     Session.spotlightedLayer = null;
     layer.style('fill', getFillForLayerGroup)
+
+  d3.select('body')
+    .style('background-color', '#fff')
+    .style('color', '#333');
+
+  d3.selectAll('.tick text').transition()
+    .duration(500)
+    .delay(300)
+    .style('fill', '#333');
+
   });
 
   var textLayer = svg.selectAll('.textlayer')
