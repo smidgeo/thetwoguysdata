@@ -3,6 +3,7 @@ var xAxisDateStrings = [];
 var dateOfLastAttack = null;
 var dateOfLastHiss = null;
 var stackedOrGrouped = 'grouped';
+var labelMargin = 6;
 
 function fetchDateOfLastEvent(csvRows, eventName) {
   var date = null;
@@ -303,8 +304,8 @@ function setUpGraph(stackData) {
       .transition()
       .attr('x', getXOfGroupedDatum)
       .attr('y', function getLabelYOfGroupedDatum(d) {
-        // We are setting this, keeping in mind this is going to be rotated 90º.
-        return getYOfGroupedDatum(d) - (x.rangeBand() / n)/3;
+        // When setting this, keeping in mind this is going to be rotated 90º.
+        return getYOfGroupedDatum(d) - (x.rangeBand() / n)/5;
       })
       .attr('transform', function(d, i, j) { 
         var rectX = getXOfGroupedDatum(d, i, j);
@@ -336,7 +337,7 @@ function setUpGraph(stackData) {
     rectLabel.transition()
       .duration(500)
       .transition()
-        .attr('x', function(d) { return x(d.x); })
+        .attr('x', function(d) { return x(d.x) + labelMargin; })
         .attr('y', function(d) { 
           return getYOfStackedDatum(d) + getHeightOfStackedDatum(d)/2;
         })
