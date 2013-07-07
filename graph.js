@@ -5,34 +5,34 @@ var Session = {
   stackedOrGrouped: 'grouped'
 };
 
-var labelMargin = 6;
-
-var preferredCategoryOrder = [
-  'Bonus Cat',
-  'Shared',
-  'Hostility',
-  'Dr. Wily'
-];
-
-var preferredActivityOrders = {
-  'Bonus Cat': [
-    'Lazy get',
-    'Workout'
+var Settings = {
+  labelMargin: 6,
+  preferredCategoryOrder: [
+    'Bonus Cat',
+    'Shared',
+    'Hostility',
+    'Dr. Wily'
   ],
-  'Hostility': [
-    'Bonus Cat Hiss',
-    'Dr. Wily Attack'
-  ],
-  'Shared': [
-    'Social Snacks',
-    'Group Meal',
-    'Turf Swap'
-  ],
-  'Dr. Wily': [
-    'Workout',
-    'Walk outside',
-    'Lazy gets'
-  ]
+  preferredActivityOrders: {
+    'Bonus Cat': [
+      'Lazy get',
+      'Workout'
+    ],
+    'Hostility': [
+      'Bonus Cat Hiss',
+      'Dr. Wily Attack'
+    ],
+    'Shared': [
+      'Social Snacks',
+      'Group Meal',
+      'Turf Swap'
+    ],
+    'Dr. Wily': [
+      'Workout',
+      'Walk outside',
+      'Lazy gets'
+    ]
+  }
 };
 
 
@@ -108,7 +108,7 @@ function csvRowObjectsToArrays(rows) {
         }
         var categorySortOrder = -1;
         if (category) {
-          categorySortOrder = preferredCategoryOrder.indexOf(category);
+          categorySortOrder = Settings.preferredCategoryOrder.indexOf(category);
         }
         if (categorySortOrder < 0) {
           // If we don't know how to sort it, but it at the end.
@@ -118,7 +118,7 @@ function csvRowObjectsToArrays(rows) {
         var activitySortOrder = -1;
         if (activity) {
           activitySortOrder = 
-            preferredActivityOrders[category].indexOf(activity);
+            Settings.preferredActivityOrders[category].indexOf(activity);
         }
         if (activitySortOrder < 0) {
           // If we don't know how to sort it, but it at the end.
@@ -399,7 +399,7 @@ function setUpGraph(stackData) {
     rectLabel.transition()
       .duration(500)
       .transition()
-        .attr('x', function(d) { return x(d.x) + labelMargin; })
+        .attr('x', function(d) { return x(d.x) + Settings.labelMargin; })
         .attr('y', function(d) { 
           return getYOfStackedDatum(d) + getHeightOfStackedDatum(d)/2;
         })
