@@ -129,7 +129,8 @@ var themes = {
     colorRanges: {
       'Bonus Cat': colorbrewer.Greens[5].slice(2, 5),
       'Dr. Wily': colorbrewer.Oranges[5],
-      Shared: colorbrewer.YlOrRd[7].slice(0, 3)      
+      Shared: colorbrewer.YlOrRd[7].slice(0, 3),
+      Hostility: ['#f21', '#f30']
     },
     stroke: 'none',
     textColor: {
@@ -142,7 +143,8 @@ var themes = {
     colorRanges: {
       'Bonus Cat': ['#fff', '#fff', '#fff'],
       'Dr. Wily': ['#181810', '#181810', '#181810', '#181810', '#181810'],
-      Shared: colorbrewer.Greys[9].slice(4, 7)
+      Shared: colorbrewer.Greys[9].slice(4, 7),
+      Hostility: ['#f21', '#f30']      
     },
     stroke: '#333',
     textColor: {
@@ -166,6 +168,10 @@ var wilyColor = d3.scale.ordinal().range(
 
 var sharedColor = d3.scale.ordinal().range(
   themes[selectedTheme].colorRanges.Shared);
+
+var hostilityColor = d3.scale.ordinal().range(
+  themes[selectedTheme].colorRanges.Hostility);
+
 
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
@@ -221,6 +227,9 @@ function setUpGraph(stackData) {
             case 'Shared':
               calculated = sharedColor(representatitveCell.indexWithinCategory);
               break;
+            case 'Hostility':
+              calculated = hostilityColor(representatitveCell.indexWithinCategory);
+              break;
             default:
               console.log('Could not find a color for', representatitveCell);
               // debugger;
@@ -228,13 +237,6 @@ function setUpGraph(stackData) {
         }
         else {
           debugger;
-        }
-
-        // Going to make exceptions to the color schemes for hostile events' 
-        // layers.
-        if (representatitveCell.activity === 'Attack' || 
-          representatitveCell.activity === 'Hiss') {
-          calculated = '#f21';
         }
 
         return calculated; 
