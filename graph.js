@@ -314,8 +314,15 @@ function setUpGraph(stackData) {
         else {
           Session.spotlightedLayer = d;
         }
+        d3.event.stopPropagation();
         layer.style('fill', getFillForLayerGroup)
       });
+
+  d3.select('#graph').on('click', function svgClicked() {
+    // Clear any spotlighting.
+    Session.spotlightedLayer = null;
+    layer.style('fill', getFillForLayerGroup)
+  });
 
   var textLayer = svg.selectAll('.textlayer')
       .data(layers)
