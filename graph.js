@@ -2,7 +2,8 @@ var Session = {
   xAxisDateStrings: [],
   dateOfLastAttack: null,
   dateOfLastHiss: null,
-  stackedOrGrouped: 'grouped'
+  stackedOrGrouped: 'grouped',
+  spotlightedLayer: null
 };
 
 var Settings = {
@@ -232,6 +233,40 @@ var sharedColor = d3.scale.ordinal().range(
 var hostilityColor = d3.scale.ordinal().range(
   themes[selectedTheme].colorRanges.Hostility);
 
+function getFillForLayerGroup(d) { 
+  var calculated = 'purple';
+  var representatitveCell = d[0];
+
+  if (representatitveCell && 
+    (typeof representatitveCell.category === 'string')) {
+    switch (representatitveCell.category) {
+      case 'Bonus Cat':
+        calculated = bonusColor(representatitveCell.activitySortOrder);
+        break;
+      case 'Dr. Wily':
+        calculated = wilyColor(representatitveCell.activitySortOrder);
+        break;
+      case 'Shared':
+        calculated = sharedColor(representatitveCell.activitySortOrder);
+        break;
+      case 'Hostility':
+        calculated = hostilityColor(representatitveCell.activitySortOrder);
+        break;
+      default:
+        console.log('Could not find a color for', representatitveCell);
+        // debugger;
+    }
+  }
+  else {
+    debugger;
+  }
+
+  if (Session.spotlightedLayer && Session.spotlightedLayer !== d) {
+    calculated = '#333';
+  }
+
+  return calculated; 
+}
 
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
@@ -271,35 +306,15 @@ function setUpGraph(stackData) {
       .data(layers)
     .enter().append('g')
       .attr('class', 'layer')
-      .style('fill', function(d, i) { 
-        var calculated = 'purple';
-        var representatitveCell = d[0];
-
-        if (representatitveCell && 
-          (typeof representatitveCell.category === 'string')) {
-          switch (representatitveCell.category) {
-            case 'Bonus Cat':
-              calculated = bonusColor(representatitveCell.activitySortOrder);
-              break;
-            case 'Dr. Wily':
-              calculated = wilyColor(representatitveCell.activitySortOrder);
-              break;
-            case 'Shared':
-              calculated = sharedColor(representatitveCell.activitySortOrder);
-              break;
-            case 'Hostility':
-              calculated = hostilityColor(representatitveCell.activitySortOrder);
-              break;
-            default:
-              console.log('Could not find a color for', representatitveCell);
-              // debugger;
-          }
+      .style('fill', getFillForLayerGroup)
+      .on('click', function layerClicked(d) {
+        if (Session.spotlightedLayer === d) {
+          Session.spotlightedLayer = null;
         }
         else {
-          debugger;
+          Session.spotlightedLayer = d;
         }
-
-        return calculated; 
+        layer.style('fill', getFillForLayerGroup)
       });
 
   var textLayer = svg.selectAll('.textlayer')
@@ -331,7 +346,8 @@ function setUpGraph(stackData) {
       })
       .attr('fill', function(d) {
         return themes[selectedTheme].textColor[d.category];
-      });
+      })
+      .classed('celllabel', true);
 
   transitionGrouped();
 

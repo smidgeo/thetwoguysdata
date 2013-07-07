@@ -65,3 +65,9 @@ text {
 .tick text {
   font-size: 10px;
 }
+
+.celllabel {
+  /* Disallow cell label elements from 'stealing' clicks from elements that are 
+  underneath them. */
+  pointer-events: none
+}
