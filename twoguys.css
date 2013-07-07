@@ -11,12 +11,6 @@ body {
   stroke: #000;
   shape-rendering: crispEdges;
 }
- 
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
 
 section {
   display: -webkit-box;   /* OLD: Safari,  iOS, Android browser, older WebKit browsers.  

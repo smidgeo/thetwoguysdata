@@ -8,11 +8,6 @@
 
 <body>
 
-<form>
-  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
-  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
-</form>
-
 <svg id="graph"></svg>
 
 <section class="textinfo">
@@ -39,6 +34,15 @@
     <span class="attacklabel">Days since the last hiss:</span> 
     <span id="dateoflasthiss" class="attackvalue">3</span>
   </div>
+
+  <div id="viewcontrols" class="textinfobox">
+    <form>
+      <label><input type="radio" name="mode" value="grouped"> Grouped</label>
+      <label><input type="radio" name="mode" value="stacked" checked> Stacked
+      </label>
+    </form>
+  </div>
+
 </section>
 
 <script src="underscore.js"></script>
