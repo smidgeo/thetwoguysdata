@@ -3,7 +3,8 @@ var Session = {
   dateOfLastAttack: null,
   dateOfLastHiss: null,
   stackedOrGrouped: 'grouped',
-  spotlightedLayer: null
+  spotlightedLayer: null,
+  csvArraysForColumns: {}
 };
 
 var Settings = {
@@ -65,7 +66,8 @@ d3.csv(
   'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
   function onGettingCSV(error, rows) {
     console.log(rows);
-    var csvArrays = csvRowObjectsToArrays(rows);
+    Session.csvArraysForColumns = csvRowObjectsToArrayDict(rows);
+    var csvArrays = _.values(Session.csvArraysForColumns);
     console.log('csvArrays', csvArrays);
     setUpGraph(csvArrays);
 
@@ -85,8 +87,7 @@ function parseMMDDYY(dateString) {
   return new Date(dateParts[2], dateParts[0] - 1, dateParts[1])
 }
 
-function csvRowObjectsToArrays(rows) {
-  var groups = [];
+function csvRowObjectsToArrayDict(rows) {
   var groupsForGroupNames = {};
   var columnNames = [];
   var sortedColumnNames = [];
@@ -177,9 +178,8 @@ function csvRowObjectsToArrays(rows) {
         });
       })
     });
-    groups = _.values(groupsForGroupNames);
   }
-  return groups;
+  return groupsForGroupNames;
 }
 
 var layers = [];
