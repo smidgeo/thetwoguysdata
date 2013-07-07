@@ -5,6 +5,35 @@ var dateOfLastHiss = null;
 var stackedOrGrouped = 'grouped';
 var labelMargin = 6;
 
+var preferredCategoryOrder = [
+  'Bonus Cat',
+  'Shared',
+  'Hostility',
+  'Dr. Wily'
+];
+
+var preferredActivityOrders = {
+  'Bonus Cat': [
+    'Lazy get',
+    'Workout'
+  ],
+  'Hostility': [
+    'Bonus Cat Hiss',
+    'Dr. Wily Attack'
+  ],
+  'Shared': [
+    'Social Snacks',
+    'Group Meal',
+    'Turf Swap'
+  ],
+  'Dr. Wily': [
+    'Workout',
+    'Walk outside',
+    'Lazy gets'
+  ]
+};
+
+
 function fetchDateOfLastEvent(csvRows, eventName) {
   var date = null;
   // csvRows are in ascending date order.
@@ -27,7 +56,6 @@ function daysSinceDate(pastDate) {
   }
   return days;
 }
-
 
 d3.csv(
   // 'Friendship%20chart.csv',
@@ -57,13 +85,58 @@ function parseMMDDYY(dateString) {
 function csvRowObjectsToArrays(rows) {
   var groups = [];
   var groupsForGroupNames = {};
-  var groupKeys = [];
+  var columnNames = [];
+  var sortedColumnNames = [];
+  var groupMetadataForColumnNames = {};
+
   if (rows.length < 1 || rows[0].length < 3) {
     return groups;
   }
   else {
-    groupKeys = (_.keys(_.omit(rows[0], 'Date', 'Attacks')));
-    _.each(groupKeys, function initGroupArray(groupKey) {
+    columnNames = (_.keys(_.omit(rows[0], 'Date')));
+
+    groupMetadataForColumnNames = _.object(columnNames, 
+      _.map(columnNames, function getMetadataForColumnName(columnName) {
+        var category = null;
+        var activity = null;
+        var parts = columnName.split(': ');
+        if (parts.length > 1) {
+          category = parts[0];
+          activity = parts[1];
+        }
+        var categorySortOrder = -1;
+        if (category) {
+          categorySortOrder = preferredCategoryOrder.indexOf(category);
+        }
+        if (categorySortOrder < 0) {
+          // If we don't know how to sort it, but it at the end.
+          categorySortOrder = 1000;
+        }
+
+        var activitySortOrder = -1;
+        if (activity) {
+          activitySortOrder = 
+            preferredActivityOrders[category].indexOf(activity);
+        }
+        if (activitySortOrder < 0) {
+          // If we don't know how to sort it, but it at the end.
+          activitySortOrder = 999;
+        }
+        return {
+          category: category,
+          activity: activity,
+          categorySortOrder: categorySortOrder,
+          activitySortOrder: activitySortOrder
+        };
+      })
+    );
+
+    sortedColumnNames = _.sortBy(columnNames, function sortColumn(columnName) {
+      var metadata = groupMetadataForColumnNames[columnName];
+      return metadata.categorySortOrder * 1000 + metadata.activitySortOrder;
+    });
+
+    _.each(sortedColumnNames, function initGroupArray(groupKey) {
       groupsForGroupNames[groupKey] = [];
     });
 
@@ -75,41 +148,26 @@ function csvRowObjectsToArrays(rows) {
       var xTime = xDate.getTime();
       var daysElapsed = (xTime - startTime)/1000/(24 * 60 * 60);
 
-      // Save the date string so the axis can use it later.
+      // SIDE EFFECT! Save the date string so the axis can use it later.
       xAxisDateStrings.push(xDate.toDateString());
 
       var currentCategory = null;
       var numberOfKeysInCategoryProcessed = 0;
 
-      _.each(groupKeys, function putRowContentsIntoArrays(key) {
-        // Use the key to find the category.
-        var category = null;
-        var keyParts = key.split(': ');
-        if (keyParts.length > 1) {
-          category = keyParts[0];
-          var activity = keyParts[1];
-
-          if (currentCategory === category) {
-            numberOfKeysInCategoryProcessed += 1;
-          }
-          else {
-            // We hit a new category.
-            currentCategory = category;
-            numberOfKeysInCategoryProcessed = 0;
-          }
-        }
+      _.each(sortedColumnNames, function putRowContentsIntoArrays(key) {
+        var columnMetadata = groupMetadataForColumnNames[key];
 
         groupsForGroupNames[key].push({
           x: daysElapsed,
           y: row[key] ? parseFloat(row[key]) : 0,
-          y0: groupKeys.indexOf(key),
-          category: category,
-          activity: activity,
-          indexWithinCategory: numberOfKeysInCategoryProcessed,
+          y0: sortedColumnNames.indexOf(key),
+          category: columnMetadata.category,
+          activity: columnMetadata.activity,
+          activitySortOrder: columnMetadata.activitySortOrder,
           getLabelText: function getText(d) {
             var text = null;
             if (this.y > 0.01) {
-              text = activity;
+              text = columnMetadata.activity;
             }
             return text;
           }
@@ -219,16 +277,16 @@ function setUpGraph(stackData) {
           (typeof representatitveCell.category === 'string')) {
           switch (representatitveCell.category) {
             case 'Bonus Cat':
-              calculated = bonusColor(representatitveCell.indexWithinCategory);
+              calculated = bonusColor(representatitveCell.activitySortOrder);
               break;
             case 'Dr. Wily':
-              calculated = wilyColor(representatitveCell.indexWithinCategory);
+              calculated = wilyColor(representatitveCell.activitySortOrder);
               break;
             case 'Shared':
-              calculated = sharedColor(representatitveCell.indexWithinCategory);
+              calculated = sharedColor(representatitveCell.activitySortOrder);
               break;
             case 'Hostility':
-              calculated = hostilityColor(representatitveCell.indexWithinCategory);
+              calculated = hostilityColor(representatitveCell.activitySortOrder);
               break;
             default:
               console.log('Could not find a color for', representatitveCell);
