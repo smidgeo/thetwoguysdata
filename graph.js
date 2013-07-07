@@ -68,11 +68,11 @@ d3.csv(
     console.log('csvArrays', csvArrays);
     setUpGraph(csvArrays);
 
-    $('#Session.dateOfLastAttack').text(daysSinceDate(
+    $('#dateoflastattack').text(daysSinceDate(
         fetchDateOfLastEvent(rows, 'Hostility: Dr. Wily Attack')
       )
     );
-    $('#Session.dateOfLastHiss').text(daysSinceDate(
+    $('#dateoflasthiss').text(daysSinceDate(
         fetchDateOfLastEvent(rows, 'Hostility: Bonus Cat Hiss')
       )
     );
