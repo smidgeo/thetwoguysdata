@@ -44,7 +44,6 @@ section {
    -prefix-box-flex: 1; /* old spec webkit, moz */
    flex: 1;
    -webkit-flex: 1;
-   width: 400px;  
 }
 
 ul.legend {
