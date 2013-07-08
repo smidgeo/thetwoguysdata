@@ -112,6 +112,9 @@ d3.csv(
         fetchDateOfLastEvent(rows, 'Hostility: Bonus Hiss')
       )
     );
+
+    BoardZoomer.setUpZoomOnBoard(d3.select('svg#graph'), d3.select('g#graphGroup'));
+
   }
 );
 
