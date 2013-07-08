@@ -22,8 +22,8 @@ var Settings = {
       'Workout'
     ],
     'Hostility': [
-      'Bonus Cat Hiss',
-      'Dr. Wily Attack'
+      'Bonus Hiss',
+      'Wily Attack'
     ],
     'Shared': [
       'Social Snacks',
