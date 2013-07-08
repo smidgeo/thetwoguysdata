@@ -283,7 +283,7 @@ function setUpGraph(stackData) {
 
   function clearSpotlighting() {
     Session.spotlightedLayer = null;
-    layer.style('fill', getFillForLayerGroup)
+    graphGroup.selectAll('.layer').style('fill', getFillForLayerGroup)
 
     d3.select('body')
       .style('background-color', '#fff')
@@ -346,7 +346,7 @@ function setUpGraph(stackData) {
         else {
           Session.spotlightedLayer = d;
 
-          layer.transition()
+          graphGroup.selectAll('.layer').transition()
             .duration(500)
             .delay(function(d, i) { return i * 10; })
             .style('fill', getFillForLayerGroup);
@@ -493,6 +493,8 @@ function setUpGraph(stackData) {
 
   function changeFilter() {
     if (Session.categoryFilter !== this.value) {
+      clearSpotlighting();
+
       if (this.value === 'None') {
         Session.categoryFilter = null;  
       }
