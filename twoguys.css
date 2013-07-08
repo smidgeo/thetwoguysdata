@@ -57,6 +57,10 @@ ul.legend {
   margin-left: -2em;
 }
 
+ul.legend li span {
+  vertical-align: 40%;
+}
+
 ul.filterform {
   list-style-type: none;
   margin-left: -2em;
@@ -94,5 +98,24 @@ text {
 }
 
 #dayssincelast {
-  margin-left: 0px;
+  margin-left: 1.2em;
+}
+
+.mainheader {
+  margin-left: 1em;
+}
+
+.mainheader h1 {
+  margin-bottom: 0px;
+  color: #444;
+}
+
+.mainheader h2 {
+  font-weight: normal;
+  font-size: 1em;
+  margin-top: 0.25em;
+}
+
+.qualitative {
+  font-family: Georgia,"Book Antiqua",serif;
 }

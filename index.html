@@ -8,24 +8,14 @@
 
 <body>
 
+<div class="mainheader qualitative">
+  <h1>Bonus Cat and Dr. Wily Friendship Data</h1>
+  <h2>(The activities of two cats, which may or may not lead to peace between them.)</h2>
+</div>
+
 <svg id="graph"></svg>
 
-<section class="textinfo">
-  <div id="legend" class="textinfobox">
-    <h4>Activities Legend</h4>
-
-    <ul class="legend">
-      <li id="bonuscat-legend">
-        <svg width="100" height="30"><g></g></svg> Bonus Cat 
-      </li>
-      <li id="drwily-legend">
-        <svg width="100" height="30"><g></g></svg> Dr. Wily
-      </li>
-      <li id="shared-legend">
-        <svg width="100" height="30"><g></g></svg> Shared
-      </li>
-    </ul>
-  </div>
+<section class="textinfo qualitative">
 
   <div id="dayssincelast" class="textinfobox">
     <span class="attacklabel">Days since last attack:</span> 
@@ -35,9 +25,24 @@
     <span id="dateoflasthiss" class="attackvalue">3</span>
   </div>
 
-  <div id="layoutcontrols" class="textinfobox">
+  <div id="legend" class="textinfobox qualitative">
+    <h4>Activities Legend</h4>
+
+    <ul class="legend">
+      <li id="bonuscat-legend">
+        <svg width="100" height="30"><g></g></svg> <span>Bonus Cat</span>
+      </li>
+      <li id="drwily-legend">
+        <svg width="100" height="30"><g></g></svg> <span>Dr. Wily</span>
+      </li>
+      <li id="shared-legend">
+        <svg width="100" height="30"><g></g></svg> <span>Shared</span>
+      </li>
+    </ul>
+  </div>
+
+  <div id="layoutcontrols" class="textinfobox qualitative">
     <h4>Layout:</h4>
-    <br />
     <form id="layoutform">
       <label><input type="radio" name="mode" value="grouped"> Grouped</label>
       <label><input type="radio" name="mode" value="stacked" checked> Stacked
@@ -45,7 +50,7 @@
     </form>
   </div>
 
-  <div id="viewcontrols" class="textinfobox">
+  <div id="viewcontrols" class="textinfobox qualitative">
     <form id="filterform">
       <h4>Filter:</h4>
       <ul class="filterform">
