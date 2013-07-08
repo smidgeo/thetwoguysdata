@@ -42,6 +42,10 @@ section {
   width: 100% /* needed for Firefox */   
 }
 
+.textinfo {
+  padding-top: 1em;
+}
+
 .textinfobox {
    -prefix-box-flex: 1; /* old spec webkit, moz */
    flex: 1;
@@ -49,6 +53,11 @@ section {
 }
 
 ul.legend {
+  list-style-type: none;
+  margin-left: -2em;
+}
+
+ul.filterform {
   list-style-type: none;
   margin-left: -2em;
 }
@@ -74,4 +83,16 @@ text {
   /* Disallow cell label elements from 'stealing' clicks from elements that are 
   underneath them. */
   pointer-events: none
+}
+
+.attacklabel {
+  font-size: 1.5em;
+}
+
+.attackvalue {
+  font-size: 2em;
+}
+
+#dayssincelast {
+  margin-left: 0px;
 }

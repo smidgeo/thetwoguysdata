@@ -12,7 +12,7 @@
 
 <section class="textinfo">
   <div id="legend" class="textinfobox">
-    <header>Activities Legend</header>
+    <h4>Activities Legend</h4>
 
     <ul class="legend">
       <li id="bonuscat-legend">
@@ -28,30 +28,43 @@
   </div>
 
   <div id="dayssincelast" class="textinfobox">
-    <span class="attacklabel">Days since the last attack:</span> 
+    <span class="attacklabel">Days since last attack:</span> 
     <span id="dateoflastattack" class="attackvalue">3</span>
     <br >
-    <span class="attacklabel">Days since the last hiss:</span> 
+    <span class="attacklabel">Days since last hiss:</span> 
     <span id="dateoflasthiss" class="attackvalue">3</span>
   </div>
 
-  <div id="viewcontrols" class="textinfobox">
+  <div id="layoutcontrols" class="textinfobox">
+    <h4>Layout:</h4>
+    <br />
     <form id="layoutform">
       <label><input type="radio" name="mode" value="grouped"> Grouped</label>
       <label><input type="radio" name="mode" value="stacked" checked> Stacked
       </label>
     </form>
+  </div>
 
-    <br /> <br />
-
+  <div id="viewcontrols" class="textinfobox">
     <form id="filterform">
-      <header>Filter:</header>
-      <label><input type="radio" name="category" value="None" checked> None</label>
-      <label><input type="radio" name="category" value="Bonus Cat"> 
+      <h4>Filter:</h4>
+      <ul class="filterform">
+        <li>
+          <label><input type="radio" name="category" value="None" checked> None</label>
+        </li>
+        <li>
+          <label><input type="radio" name="category" value="Bonus Cat"> 
         Bonus Cat</label>
-      <label><input type="radio" name="category" value="Dr. Wily" > Dr. Wily</label>
-      <label><input type="radio" name="category" value="Shared" > Shared</label>
-      <label><input type="radio" name="category" value="Hostility" > Hostility</label>
+        </li>
+        <li>          
+          <label><input type="radio" name="category" value="Dr. Wily" > Dr. Wily</label>
+        </li>
+        <li>
+          <label><input type="radio" name="category" value="Shared" > Shared</label>
+        </li>
+        <li>
+          <label><input type="radio" name="category" value="Hostility" > Hostility</label>
+        </li>          
     </form>
 
   </div>
