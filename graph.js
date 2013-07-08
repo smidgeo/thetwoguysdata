@@ -73,11 +73,11 @@ d3.csv(
     setUpGraph(csvArrays);
 
     $('#dateoflastattack').text(daysSinceDate(
-        fetchDateOfLastEvent(rows, 'Hostility: Dr. Wily Attack')
+        fetchDateOfLastEvent(rows, 'Hostility: Wily Attack')
       )
     );
     $('#dateoflasthiss').text(daysSinceDate(
-        fetchDateOfLastEvent(rows, 'Hostility: Bonus Cat Hiss')
+        fetchDateOfLastEvent(rows, 'Hostility: Bonus Hiss')
       )
     );
   }
