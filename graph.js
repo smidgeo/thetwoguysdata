@@ -38,6 +38,38 @@ var Settings = {
   }
 };
 
+var themes = {
+  rainbow: {
+    colorRanges: {
+      'Bonus Cat': colorbrewer.Greens[5].slice(2, 5),
+      'Dr. Wily': colorbrewer.Oranges[5].slice(1, 4),
+      Shared: colorbrewer.YlOrRd[7].slice(0, 3),
+      Hostility: ['#f21', '#f30']
+    },
+    stroke: 'none',
+    textColor: {
+      'Bonus Cat': '#fff',
+      'Dr. Wily': '#333',
+      Shared: '#333'
+    }
+  },
+  blackandwhite: {
+    colorRanges: {
+      'Bonus Cat': ['#fff', '#fff', '#fff'],
+      'Dr. Wily': ['#181810', '#181810', '#181810', '#181810', '#181810'],
+      Shared: colorbrewer.Greys[9].slice(4, 7),
+      Hostility: ['#f21', '#f30']      
+    },
+    stroke: '#333',
+    textColor: {
+      'Bonus Cat': '#333',
+      'Dr. Wily': '#fff',
+      Shared: '#fff'
+    }
+  }
+}
+
+var selectedTheme = 'rainbow';
 
 function fetchDateOfLastEvent(csvRows, eventName) {
   var date = null;
@@ -187,38 +219,6 @@ function csvRowObjectsToArrayDict(rows) {
 var layers = [];
 
 
-var themes = {
-  rainbow: {
-    colorRanges: {
-      'Bonus Cat': colorbrewer.Greens[5].slice(2, 5),
-      'Dr. Wily': colorbrewer.Oranges[5],
-      Shared: colorbrewer.YlOrRd[7].slice(0, 3),
-      Hostility: ['#f21', '#f30']
-    },
-    stroke: 'none',
-    textColor: {
-      'Bonus Cat': '#fff',
-      'Dr. Wily': '#333',
-      Shared: '#333'
-    }
-  },
-  blackandwhite: {
-    colorRanges: {
-      'Bonus Cat': ['#fff', '#fff', '#fff'],
-      'Dr. Wily': ['#181810', '#181810', '#181810', '#181810', '#181810'],
-      Shared: colorbrewer.Greys[9].slice(4, 7),
-      Hostility: ['#f21', '#f30']      
-    },
-    stroke: '#333',
-    textColor: {
-      'Bonus Cat': '#333',
-      'Dr. Wily': '#fff',
-      Shared: '#fff'
-    }
-  }
-}
-
-var selectedTheme = 'rainbow';
 // selectedTheme = 'blackandwhite';
 
 // Set up color generating functions.
