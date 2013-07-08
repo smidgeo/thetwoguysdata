@@ -36,11 +36,24 @@
   </div>
 
   <div id="viewcontrols" class="textinfobox">
-    <form>
+    <form id="layoutform">
       <label><input type="radio" name="mode" value="grouped"> Grouped</label>
       <label><input type="radio" name="mode" value="stacked" checked> Stacked
       </label>
     </form>
+
+    <br /> <br />
+
+    <form id="filterform">
+      <header>Filter:</header>
+      <label><input type="radio" name="category" value="None" checked> None</label>
+      <label><input type="radio" name="category" value="Bonus Cat"> 
+        Bonus Cat</label>
+      <label><input type="radio" name="category" value="Dr. Wily" > Dr. Wily</label>
+      <label><input type="radio" name="category" value="Shared" > Shared</label>
+      <label><input type="radio" name="category" value="Hostility" > Hostility</label>
+    </form>
+
   </div>
 
 </section>

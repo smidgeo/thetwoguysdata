@@ -4,7 +4,8 @@ var Session = {
   dateOfLastHiss: null,
   stackedOrGrouped: 'grouped',
   spotlightedLayer: null,
-  csvArraysForColumns: {}
+  csvArraysForColumns: {},
+  categoryFilter: null
 };
 
 var Settings = {
@@ -158,20 +159,21 @@ function csvRowObjectsToArrayDict(rows) {
       var currentCategory = null;
       var numberOfKeysInCategoryProcessed = 0;
 
-      _.each(sortedColumnNames, function putRowContentsIntoArrays(key) {
-        var columnMetadata = groupMetadataForColumnNames[key];
+      _.each(sortedColumnNames, function putRowContentsIntoArrays(columnName) {
+        var columnMetadata = groupMetadataForColumnNames[columnName];
 
-        groupsForGroupNames[key].push({
+        groupsForGroupNames[columnName].push({
           x: daysElapsed,
-          y: row[key] ? parseFloat(row[key]) : 0,
-          y0: sortedColumnNames.indexOf(key),
+          y: row[columnName] ? parseFloat(row[columnName]) : 0,
+          y0: sortedColumnNames.indexOf(columnName),
           category: columnMetadata.category,
           activity: columnMetadata.activity,
+          columnName: columnName,
           activitySortOrder: columnMetadata.activitySortOrder,
           getLabelText: function getText(d) {
             var text = null;
             if (this.y > 0.01) {
-              text = columnMetadata.activity;
+              text = this.activity;
             }
             return text;
           }
@@ -269,6 +271,7 @@ function getFillForLayerGroup(d) {
   return calculated; 
 }
 
+
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
       m = stackData[0].length, // number of samples per layer
@@ -277,7 +280,7 @@ function setUpGraph(stackData) {
       yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
       yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
   // console.log(stackData);
-   
+
   function clearSpotlighting() {
     Session.spotlightedLayer = null;
     layer.style('fill', getFillForLayerGroup)
@@ -290,6 +293,10 @@ function setUpGraph(stackData) {
       .duration(500)
       .delay(300)
       .style('fill', '#333');
+  }
+
+  function identifyLayer(columnArray) {
+    return columnArray[0].columnName;
   }
 
   var margin = {top: 40, right: 10, bottom: 20, left: 10},
@@ -305,20 +312,27 @@ function setUpGraph(stackData) {
       .range([height, 0]);
    
   var xAxis = d3.svg.axis()
-      .scale(x)
-      .tickSize(0)
-      .tickPadding(6)
-      .orient('bottom')
-      .tickValues(Session.xAxisDateStrings);
+    .scale(x)
+    .tickSize(0)
+    .tickPadding(6)
+    .orient('bottom')
+    .tickValues(Session.xAxisDateStrings);
    
   var svg = d3.select('svg#graph')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
 
-  var layer = svg.selectAll('.layer')
-      .data(layers)
+  var graphGroup = svg.select('g#graphGroup');
+  if (graphGroup.empty()) {
+    graphGroup = svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('id', 'graphGroup');
+  }
+
+  var layerUpdatingSelection = graphGroup.selectAll('.layer').data(layers, 
+    identifyLayer);
+
+  var layer = layerUpdatingSelection
     .enter().append('g')
       .attr('class', 'layer')
       .style('fill', getFillForLayerGroup)
@@ -349,23 +363,21 @@ function setUpGraph(stackData) {
         }
       });
 
+  layerUpdatingSelection.exit().remove();
+
   d3.select('html').on('click', clearSpotlighting);
 
-  var textLayer = svg.selectAll('.textlayer')
-      .data(layers)
-    .enter().append('g')
-      .attr('class', 'textlayer');
+  var textLayerUpdatingSelection = graphGroup.selectAll('.textlayer')
+    .data(layers, identifyLayer);
+
+  var textLayer = textLayerUpdatingSelection.enter().append('g')
+    .attr('class', 'textlayer');
+
+  textLayerUpdatingSelection.exit().remove();
   
-  // TODO: Consider having two rects, one to identify guy, and one to identify 
-  // the activity. Then, split the activities into two color groups: Good and 
-  // bad.
   var rect = layer.selectAll('rect')
       .data(function(d) { return d; })
     .enter().append('rect')
-      .attr('x', function(d) { return x(d.x); })
-      .attr('y', height)
-      .attr('width', x.rangeBand())
-      .attr('height', 0)
       .attr('stroke', themes[selectedTheme].stroke);
 
   var rectLabel = textLayer.selectAll('text')
@@ -385,12 +397,15 @@ function setUpGraph(stackData) {
 
   transitionGrouped();
 
-  svg.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(xAxis);
+  var axisGroup = graphGroup.select('.x.axis');
+  if (axisGroup.empty()) {
+    axisGroup = graphGroup.append('g').attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + height + ')');
+    axisGroup.call(xAxis);
+  }
    
-  d3.selectAll('input').on('change', change);
+  d3.selectAll('#layoutform input').on('change', changeLayout);
+  d3.selectAll('#filterform input').on('change', changeFilter);
 
   function transitionGrouped() {
     y.domain([0, yGroupMax]);
@@ -437,7 +452,8 @@ function setUpGraph(stackData) {
       return y(d.y0 + d.y); 
     }
    
-    rect.transition()
+    var allRectsInGraph = graphGroup.selectAll('rect');
+    allRectsInGraph.transition()
         .duration(500)
         .delay(function(d, i) { return i * 10; })
         .attr('y', getYOfStackedDatum)
@@ -446,7 +462,8 @@ function setUpGraph(stackData) {
         .attr('x', function(d) { return x(d.x); })
         .attr('width', x.rangeBand());
 
-    rectLabel.transition()
+    var allCellLabelsInGraph = graphGroup.selectAll('.celllabel');
+    allCellLabelsInGraph.transition()
       .duration(500)
       .transition()
         .attr('x', function(d) { return x(d.x) + Settings.labelMargin; })
@@ -458,10 +475,11 @@ function setUpGraph(stackData) {
   }
 
   var timeout = setTimeout(function() {
-    d3.select('input[value=\'stacked\']').property('checked', true).each(change);
+    d3.select('input[value=\'stacked\']').property('checked', true).each(
+      changeLayout);
   }, 2000);
    
-  function change() {
+  function changeLayout() {
     clearTimeout(timeout);
 
     Session.stackedOrGrouped = this.value;
@@ -470,6 +488,33 @@ function setUpGraph(stackData) {
     }
     else {
       transitionStacked();
+    }
+  }
+
+  function changeFilter() {
+    if (Session.categoryFilter !== this.value) {
+      if (this.value === 'None') {
+        Session.categoryFilter = null;  
+      }
+      else {
+        Session.categoryFilter = this.value;
+      }
+
+      // Make the cell rect widths and heights redraw and change.
+      var csvArrays = [];
+
+      if (!Session.categoryFilter) {
+        csvArrays = _.values(Session.csvArraysForColumns);
+      }
+      else {
+        csvArrays = _.filter(Session.csvArraysForColumns, 
+          function columnIsInFilter(columnArray, columnName) {
+            var representativeCell = columnArray[0];
+            return (representativeCell.category === Session.categoryFilter);
+          }
+        );
+      }
+      setUpGraph(csvArrays);
     }
   }
 
