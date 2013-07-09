@@ -123,18 +123,19 @@ d3.csv(Settings.csvUrl,
       )
     );
 
-    BoardZoomer.setUpZoomOnBoard(d3.select('svg#graph'), d3.select('g#graphGroup'));
-    var $graphBoard = $('#graph');
+    var graphGroup = d3.select('g#graphGroup');
+    BoardZoomer.setUpZoomOnBoard(d3.select('svg#graph'), graphGroup);
 
     setTimeout(function initialZoom() {
       var $graph = $('#graph');
       var panPoint = {x: $graph.width()/2, y: $graph.height()/2};
       if (location.hash) {
-        debugger;
-        $highlightRect = $(location.hash);
-        if ($highlightRect.length > 0) {
-          panPoint.x = $highlightRect.attr('x');
-          panPoint.y = $highlightRect.attr('y');
+        $spotlightRect = $(location.hash);
+        if ($spotlightRect.length > 0) {
+          panPoint.x = $spotlightRect.attr('x');
+          panPoint.y = $spotlightRect.attr('y');
+          spotlightLayer(d3.select($spotlightRect.parent()[0]).node().__data__, 
+            graphGroup);
         }
       }
 
@@ -305,6 +306,24 @@ function getFillForLayerGroup(d) {
   return calculated; 
 }
 
+function spotlightLayer(layerData, graphGroup) {
+  Session.spotlightedLayer = layerData;
+
+  graphGroup.selectAll('.layer').transition()
+    .duration(500)
+    .delay(function(layerData, i) { return i * 10; })
+    .style('fill', getFillForLayerGroup);
+
+  d3.select('body').transition()
+    .delay(200)
+    .style('background-color', '#242425')
+    .style('color', '#eee');
+
+  d3.selectAll('.tick text').transition()
+    .duration(500)
+    .delay(300)
+    .style('fill', '#ccc');  
+}
 
 function setUpGraph(stackData) {  
   var n = stackData.length, // number of layers
@@ -375,22 +394,7 @@ function setUpGraph(stackData) {
       clearSpotlighting();
     }
     else {
-      Session.spotlightedLayer = d;
-
-      graphGroup.selectAll('.layer').transition()
-        .duration(500)
-        .delay(function(d, i) { return i * 10; })
-        .style('fill', getFillForLayerGroup);
-
-      d3.select('body').transition()
-        .delay(200)
-        .style('background-color', '#242425')
-        .style('color', '#eee');
-
-      d3.selectAll('.tick text').transition()
-        .duration(500)
-        .delay(300)
-        .style('fill', '#ccc');          
+      spotlightLayer(d, graphGroup);
     }
   }
 
