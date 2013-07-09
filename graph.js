@@ -97,6 +97,15 @@ function daysSinceDate(pastDate) {
   return days;
 }
 
+function panToPoint(point, boardSize) {
+  var offsetXFromBoardCenter = boardSize[0]/2 - point.x;
+  var offsetYFromBoardCenter = boardSize[1]/2 - point.y;
+  
+  BoardZoomer.tweenToNewZoom(1.0, 
+    [offsetXFromBoardCenter, offsetYFromBoardCenter], 
+    750);
+}
+
 d3.csv(Settings.csvUrl,
   function onGettingCSV(error, rows) {
     console.log(rows);
@@ -115,7 +124,14 @@ d3.csv(Settings.csvUrl,
     );
 
     BoardZoomer.setUpZoomOnBoard(d3.select('svg#graph'), d3.select('g#graphGroup'));
+    var $graphBoard = $('#graph');
 
+    setTimeout(function initialZoom() {
+      var $graph = $('#graph');
+      panToPoint({x: $graph.width()/2, y: $graph.height()/2},
+        [window.innerWidth, window.innerHeight]);
+    },
+    3000);
   }
 );
 
@@ -329,7 +345,8 @@ function setUpGraph(stackData) {
   var graphGroup = svg.select('g#graphGroup');
   if (graphGroup.empty()) {
     graphGroup = svg.append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')' + 
+        ' scale(1)')
       .attr('id', 'graphGroup');
   }
 
