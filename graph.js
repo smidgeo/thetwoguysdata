@@ -128,8 +128,17 @@ d3.csv(Settings.csvUrl,
 
     setTimeout(function initialZoom() {
       var $graph = $('#graph');
-      panToPoint({x: $graph.width()/2, y: $graph.height()/2},
-        [window.innerWidth, window.innerHeight]);
+      var panPoint = {x: $graph.width()/2, y: $graph.height()/2};
+      if (location.hash) {
+        debugger;
+        $highlightRect = $(location.hash);
+        if ($highlightRect.length > 0) {
+          panPoint.x = $highlightRect.attr('x');
+          panPoint.y = $highlightRect.attr('y');
+        }
+      }
+
+      panToPoint(panPoint, [window.innerWidth, window.innerHeight]);
     },
     3000);
   }
@@ -138,6 +147,10 @@ d3.csv(Settings.csvUrl,
 function parseMMDDYY(dateString) {
   var dateParts = dateString.split('/');
   return new Date(dateParts[2], dateParts[0] - 1, dateParts[1])
+}
+
+function sanitizeAsId(string) {
+  return string.replace(/ |:|\./g, '');
 }
 
 function csvRowObjectsToArrayDict(rows) {
@@ -221,6 +234,7 @@ function csvRowObjectsToArrayDict(rows) {
           category: columnMetadata.category,
           activity: columnMetadata.activity,
           columnName: columnName,
+          id: sanitizeAsId(columnName) + xTime,
           activitySortOrder: columnMetadata.activitySortOrder,
           getLabelText: function getText(d) {
             var text = null;
@@ -409,7 +423,11 @@ function setUpGraph(stackData) {
   var rect = layer.selectAll('rect')
       .data(function(d) { return d; })
     .enter().append('rect')
-      .attr('stroke', themes[selectedTheme].stroke);
+      .attr('stroke', themes[selectedTheme].stroke)
+      .attr('id', function(d) { return d.id; })
+      .on('click', function rectClicked(d) {
+        location.hash = d.id;
+      });
 
   var rectLabel = textLayer.selectAll('text')
     .data(function getLabelData(d) {
