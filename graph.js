@@ -36,6 +36,7 @@ var Settings = {
       'Lazy gets'
     ]
   },
+  stackedBarWidth: 100,
   // csvUrl: 'Friendship%20chart.csv'
   csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv'
 };
@@ -303,7 +304,7 @@ function setUpGraph(stackData) {
   }
 
   var margin = {top: 40, right: 10, bottom: 20, left: 10},
-      width = 1280 - margin.left - margin.right,
+      width = m * Settings.stackedBarWidth - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
    
   var x = d3.scale.ordinal()
