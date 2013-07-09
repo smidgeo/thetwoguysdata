@@ -35,7 +35,9 @@ var Settings = {
       'Walk outside',
       'Lazy gets'
     ]
-  }
+  },
+  // csvUrl: 'Friendship%20chart.csv'
+  csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv'
 };
 
 var themes = {
@@ -94,9 +96,7 @@ function daysSinceDate(pastDate) {
   return days;
 }
 
-d3.csv(
-  // 'Friendship%20chart.csv',
-  'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
+d3.csv(Settings.csvUrl,
   function onGettingCSV(error, rows) {
     console.log(rows);
     Session.csvArraysForColumns = csvRowObjectsToArrayDict(rows);
