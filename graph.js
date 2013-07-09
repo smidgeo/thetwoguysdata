@@ -335,40 +335,50 @@ function setUpGraph(stackData) {
   var layerUpdatingSelection = graphGroup.selectAll('.layer').data(layers, 
     identifyLayer);
 
+  function layerClicked(d) {
+    d3.event.stopPropagation();
+
+    if (Session.spotlightedLayer === d) {
+      Session.spotlightedLayer = null;
+      clearSpotlighting();
+    }
+    else {
+      Session.spotlightedLayer = d;
+
+      graphGroup.selectAll('.layer').transition()
+        .duration(500)
+        .delay(function(d, i) { return i * 10; })
+        .style('fill', getFillForLayerGroup);
+
+      d3.select('body').transition()
+        .delay(200)
+        .style('background-color', '#242425')
+        .style('color', '#eee');
+
+      d3.selectAll('.tick text').transition()
+        .duration(500)
+        .delay(300)
+        .style('fill', '#ccc');          
+    }
+  }
+
   var layer = layerUpdatingSelection
     .enter().append('g')
       .attr('class', 'layer')
       .style('fill', getFillForLayerGroup)
-      .on('click', function layerClicked(d) {
-        d3.event.stopPropagation();
-
-        if (Session.spotlightedLayer === d) {
-          Session.spotlightedLayer = null;
-          clearSpotlighting();
-        }
-        else {
-          Session.spotlightedLayer = d;
-
-          graphGroup.selectAll('.layer').transition()
-            .duration(500)
-            .delay(function(d, i) { return i * 10; })
-            .style('fill', getFillForLayerGroup);
-
-          d3.select('body').transition()
-            .delay(200)
-            .style('background-color', '#242425')
-            .style('color', '#eee');
-
-          d3.selectAll('.tick text').transition()
-            .duration(500)
-            .delay(300)
-            .style('fill', '#ccc');          
-        }
-      });
+      .on('click', layerClicked)
+      .on('touchend', layerClicked);
+    
+  // Need to use the touchend event here because the click event will 
+  // trigger a handler on Mobile Safari if there's no zoom behavior attached, 
+  // but *if there is*, the zoom behavior will stop the propagation of the click 
+  // event.
 
   layerUpdatingSelection.exit().remove();
 
-  d3.select('html').on('click', clearSpotlighting);
+  d3.select('html')
+    .on('click', clearSpotlighting)
+    .on('touchend', clearSpotlighting);
 
   var textLayerUpdatingSelection = graphGroup.selectAll('.textlayer')
     .data(layers, identifyLayer);
