@@ -400,9 +400,6 @@ function setUpGraph(stackData) {
     .enter().append('text')
       .attr('x', function(d) { return x(d.x); })
       .attr('y', function(d) { return y(d.y); })
-      .text(function getText(d) {
-        return d.getLabelText();
-      })
       .attr('fill', function(d) {
         return themes[selectedTheme].textColor[d.category];
       })
@@ -452,7 +449,14 @@ function setUpGraph(stackData) {
         var rectY = getYOfGroupedDatum(d);
         return 'rotate(90 ' + rectX + ' ' + rectY + ')'; 
       })
-      .attr('font-size', 10);
+      .attr('font-size', 10)
+      .selectAll('tspan').remove();
+
+    rectLabel.append('tspan')
+      .text(function getText(d) {
+        return d.getLabelText();
+      });
+
   }
    
   function transitionStacked() {
@@ -485,6 +489,23 @@ function setUpGraph(stackData) {
         })
         .attr('transform', function(d) { return 'rotate:(0) translate(0, 0)'; })
         .attr('font-size', 14)
+        .selectAll('tspan').remove();
+
+    rectLabel.each(function makeTspanPerWord(d) {
+      var cellText = d.getLabelText();
+      if (cellText) {
+        var words = cellText.split(' ');
+        for (var i = 0; i < words.length; ++i) {
+          d3.select(this).append('tspan')
+            .text(words[i])
+            .attr({
+              x: x(d.x)  + Settings.labelMargin, // This is the parent <text>'s x.
+              dy: i * 16
+            });
+        }
+      }
+    });
+
   }
 
   var timeout = setTimeout(function() {
