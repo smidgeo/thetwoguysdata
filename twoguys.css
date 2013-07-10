@@ -47,9 +47,41 @@ section {
 }
 
 .textinfobox {
-   -prefix-box-flex: 1; /* old spec webkit, moz */
-   flex: 1;
-   -webkit-flex: 1;
+  min-width: auto;
+  border: 1px dashed #ccc;
+  border-radius: 8pt;
+  min-height: 200px;
+}
+
+#dayssincelast {
+  border: none;
+  padding-top: 100px;
+}
+
+#legend {
+  width: 180px;
+  border: 1px dashed #ccc;
+  border-radius: 8pt;
+  padding-left: 1em;
+  margin-right: 1em;
+  margin-left: 1em;
+}
+
+#viewcontrols {
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-right: 1em;  
+}
+
+#layoutcontrols {
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-right: 1em;  
+}
+
+
+#legend h4 {
+  margin-left: 0.3em
 }
 
 ul.legend {
@@ -68,13 +100,6 @@ ul.filterform {
 
 #graph {
   border: 2px dashed rgba(0, 0, 0, 0.1);
-}
-
-#dayssincelast {
-}
-
-#legend {
-  margin-left: 1em
 }
 
 text {
