@@ -66,6 +66,10 @@ ul.filterform {
   margin-left: -2em;
 }
 
+#graph {
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
 #dayssincelast {
 }
 
