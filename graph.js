@@ -106,6 +106,20 @@ function panToPoint(point, boardSize) {
     750);
 }
 
+function focusOnRect($rect) {
+  var $graph = $('#graph');
+ 
+  var panPoint = {x: $graph.width()/2, y: $graph.height()/2};
+  if ($rect.length > 0) {
+    panPoint.x = $rect.attr('x');
+    panPoint.y = $rect.attr('y');
+    spotlightLayer(d3.select($rect.parent()[0]).node().__data__, 
+      d3.select('g#graphGroup'));
+  }
+
+  panToPoint(panPoint, [window.innerWidth, window.innerHeight]);  
+}
+
 d3.csv(Settings.csvUrl,
   function onGettingCSV(error, rows) {
     console.log(rows);
@@ -127,21 +141,33 @@ d3.csv(Settings.csvUrl,
     BoardZoomer.setUpZoomOnBoard(d3.select('svg#graph'), graphGroup);
 
     setTimeout(function initialZoom() {
-      var $graph = $('#graph');
-      var panPoint = {x: $graph.width()/2, y: $graph.height()/2};
       if (location.hash) {
         $spotlightRect = $(location.hash);
-        if ($spotlightRect.length > 0) {
-          panPoint.x = $spotlightRect.attr('x');
-          panPoint.y = $spotlightRect.attr('y');
-          spotlightLayer(d3.select($spotlightRect.parent()[0]).node().__data__, 
-            graphGroup);
-        }
+        focusOnRect($spotlightRect);
       }
-
-      panToPoint(panPoint, [window.innerWidth, window.innerHeight]);
     },
     3000);
+
+    $('.attackspotlighttrigger').on('click', function() {
+      var attackRect = _.last(_.filter($('[id|="HostilityWilyAttack"]'), 
+        function heightIsNonZero(rect) { 
+          return (rect.getAttribute('height') > 0); 
+        })
+      );
+
+      focusOnRect($(attackRect));      
+    });
+
+    $('.hissspotlighttrigger').on('click', function() {
+      var attackRect = _.last(_.filter($('[id|="HostilityBonusHiss"]'), 
+        function heightIsNonZero(rect) { 
+          return (rect.getAttribute('height') > 0); 
+        })
+      );
+
+      focusOnRect($(attackRect));      
+    });
+
   }
 );
 
@@ -235,7 +261,7 @@ function csvRowObjectsToArrayDict(rows) {
           category: columnMetadata.category,
           activity: columnMetadata.activity,
           columnName: columnName,
-          id: sanitizeAsId(columnName) + xTime,
+          id: sanitizeAsId(columnName) + '-' + xTime,
           activitySortOrder: columnMetadata.activitySortOrder,
           getLabelText: function getText(d) {
             var text = null;
