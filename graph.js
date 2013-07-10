@@ -97,6 +97,21 @@ function daysSinceDate(pastDate) {
   return days;
 }
 
+
+function isMobile() {
+  return isMobileSafari() || isAndroid();
+}
+
+function isMobileSafari() {
+  return navigator.userAgent.match(/(iPod|iPhone|iPad)/) && 
+  navigator.userAgent.match(/AppleWebKit/)
+}
+
+function isAndroid() {
+  var ua = navigator.userAgent.toLowerCase();
+  return ua.indexOf("android") > -1;
+}
+
 function panToPoint(point, boardSize) {
   var offsetXFromBoardCenter = boardSize[0]/2 - point.x;
   var offsetYFromBoardCenter = boardSize[1]/2 - point.y;
@@ -382,6 +397,9 @@ function setUpGraph(stackData) {
       width = m * Settings.stackedBarWidth - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
    
+  if (isMobile()) {
+    height = 240;
+  }
   var x = d3.scale.ordinal()
       .domain(d3.range(m))
       .rangeRoundBands([0, width], .08);
