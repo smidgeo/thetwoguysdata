@@ -103,7 +103,7 @@ function isMobile() {
 }
 
 function isMobileSafari() {
-  return navigator.userAgent.match(/(iPod|iPhone|iPad)/) && 
+  return navigator.userAgent.match(/(iPod|iPhone)/) && 
   navigator.userAgent.match(/AppleWebKit/)
 }
 
