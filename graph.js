@@ -98,13 +98,13 @@ function daysSinceDate(pastDate) {
   return days;
 }
 
-
-function isMobile() {
-  return isMobileSafari() || isAndroid();
+function isiPhone() {
+  return navigator.userAgent.match(/(iPod|iPhone)/) && 
+  navigator.userAgent.match(/AppleWebKit/)
 }
 
-function isMobileSafari() {
-  return navigator.userAgent.match(/(iPod|iPhone)/) && 
+function isiPad() {
+  return navigator.userAgent.match(/iPad/) && 
   navigator.userAgent.match(/AppleWebKit/)
 }
 
@@ -404,10 +404,20 @@ function setUpGraph(stackData) {
   }
 
   var width = m * Settings.stackedBarWidth - Settings.margin.left - Settings.margin.right;
-      
+
+  // TODO: Media queries.
+  var intendedHeight = '60%';
+
+  if (isiPad()) {
+    intendedHeight = 462;
+  }
+  else if (isiPhone() || isAndroid()) {
+    intendedHeight = 300;
+  }
+
   var svg = d3.select('svg#graph')    
     .attr('width', '96%')
-    .attr('height', '60%');
+    .attr('height', intendedHeight);
 
   var graphGroup = svg.select('g#graphGroup');
   if (graphGroup.empty()) {
@@ -420,9 +430,6 @@ function setUpGraph(stackData) {
   var height = 
     d3.select('#graph').node().clientHeight - Settings.margin.top - Settings.margin.bottom;
    
-  // if (isMobile()) {
-  //   height = 240;
-  // }
   var x = d3.scale.ordinal()
       .domain(d3.range(m))
       .rangeRoundBands([0, width], .08);
