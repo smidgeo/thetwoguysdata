@@ -37,8 +37,9 @@ var Settings = {
     ]
   },
   stackedBarWidth: 100,
-  // csvUrl: 'Friendship%20chart.csv'
-  csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv'
+  // csvUrl: 'Friendship%20chart.csv',
+  csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
+  margin: {top: 40, right: 10, bottom: 20, left: 10}
 };
 
 var themes = {
@@ -159,6 +160,15 @@ d3.csv(Settings.csvUrl,
       if (location.hash) {
         $spotlightRect = $(location.hash);
         focusOnRect($spotlightRect);
+      }
+      else {
+        var graphEl = d3.select('#graph').node();
+        var lastBarX = 
+          Session.xAxisDateStrings.length * Settings.stackedBarWidth;
+        var panX = -lastBarX + graphEl.clientWidth - Settings.stackedBarWidth;
+        var panY = Settings.margin.top;
+
+        BoardZoomer.tweenToNewZoom(1.0, [panX, panY], 750);
       }
     },
     3000);
@@ -393,13 +403,26 @@ function setUpGraph(stackData) {
     return columnArray[0].columnName;
   }
 
-  var margin = {top: 40, right: 10, bottom: 20, left: 10},
-      width = m * Settings.stackedBarWidth - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
-   
-  if (isMobile()) {
-    height = 240;
+  var width = m * Settings.stackedBarWidth - Settings.margin.left - Settings.margin.right;
+      
+  var svg = d3.select('svg#graph')    
+    .attr('width', '96%')
+    .attr('height', '60%');
+
+  var graphGroup = svg.select('g#graphGroup');
+  if (graphGroup.empty()) {
+    graphGroup = svg.append('g')
+      .attr('transform', 'translate(' + Settings.margin.left + ',' + Settings.margin.top + ')' + 
+        ' scale(1)')
+      .attr('id', 'graphGroup');
   }
+
+  var height = 
+    d3.select('#graph').node().clientHeight - Settings.margin.top - Settings.margin.bottom;
+   
+  // if (isMobile()) {
+  //   height = 240;
+  // }
   var x = d3.scale.ordinal()
       .domain(d3.range(m))
       .rangeRoundBands([0, width], .08);
@@ -407,25 +430,13 @@ function setUpGraph(stackData) {
   var y = d3.scale.linear()
       .domain([0, yStackMax])
       .range([height, 0]);
-   
+
   var xAxis = d3.svg.axis()
     .scale(x)
     .tickSize(0)
     .tickPadding(6)
     .orient('bottom')
     .tickValues(Session.xAxisDateStrings);
-   
-  var svg = d3.select('svg#graph')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom);
-
-  var graphGroup = svg.select('g#graphGroup');
-  if (graphGroup.empty()) {
-    graphGroup = svg.append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')' + 
-        ' scale(1)')
-      .attr('id', 'graphGroup');
-  }
 
   var layerUpdatingSelection = graphGroup.selectAll('.layer').data(layers, 
     identifyLayer);
