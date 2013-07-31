@@ -39,7 +39,8 @@ var Settings = {
   stackedBarWidth: 100,
   // csvUrl: 'Friendship%20chart.csv',
   csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
-  margin: {top: 40, right: 10, bottom: 20, left: 10}
+  margin: {top: 40, right: 10, bottom: 20, left: 10},
+  minimumGraphHeight: 420
 };
 
 var themes = {
@@ -166,7 +167,15 @@ d3.csv(Settings.csvUrl,
         var lastBarX = 
           Session.xAxisDateStrings.length * Settings.stackedBarWidth;
         var panX = -lastBarX + graphEl.clientWidth - Settings.stackedBarWidth;
-        var panY = Settings.margin.top;
+
+        var xAxisGroup = graphGroup.select('.x.axis');
+        var axisTransform = 
+          BoardZoomer.parseScaleAndTranslateFromTransformString(
+            xAxisGroup.attr('transform')
+          );
+        var axisY = axisTransform.translate[1];
+        var panY = -axisY + graphEl.clientHeight 
+          - xAxisGroup.node().getBoundingClientRect().height;
 
         BoardZoomer.tweenToNewZoom(1.0, [panX, panY], 750);
       }
@@ -429,7 +438,10 @@ function setUpGraph(stackData) {
 
   var height = 
     d3.select('#graph').node().clientHeight - Settings.margin.top - Settings.margin.bottom;
-   
+  if (height < Settings.minimumGraphHeight) {
+    height = Settings.minimumGraphHeight;
+  }
+
   var x = d3.scale.ordinal()
       .domain(d3.range(m))
       .rangeRoundBands([0, width], .08);
