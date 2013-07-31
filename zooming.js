@@ -226,11 +226,17 @@ var BoardZoomer = {
     var parsed = { scale: 1.0, translate: [0, 0] };
 
     if (transformString && (transformString.length > 0)) {    
+      var translateEndDelimiter = ')';
       // Transform string will be in the form of "translate(0, 0) scale(1)".
+      // Scale may be missing, though.
       var scalePiece = transformString.split('scale(')[1];
-      parsed.scale = parseFloat(scalePiece.substr(0, scalePiece.length - 1));
-
-      var translateFragments = transformString.split(') ')[0].split(',');
+      if (scalePiece) {
+        parsed.scale = parseFloat(scalePiece.substr(0, scalePiece.length - 1));
+        translateEndDelimiter = ') ';
+      }
+      
+      var translateFragments = 
+        transformString.split(translateEndDelimiter)[0].split(',');
       parsed.translate = [
         // Chop out "translate(".
         parseFloat(translateFragments[0].substr(10)),
