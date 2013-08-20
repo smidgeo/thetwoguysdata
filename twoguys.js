@@ -32,10 +32,8 @@ var Settings = {
       'Lazy gets'
     ]
   },
-  stackedBarWidth: 100,
   // csvUrl: 'Friendship%20chart.csv',
   csvUrl: 'https://docs.google.com/spreadsheet/pub?key=0AqUvOryrtCYHdHREc3ZjTXpDRVRmZHgzMGZ0VHZwUWc&single=true&gid=0&output=csv',
-  margin: {top: 40, right: 10, bottom: 20, left: 10},
   minimumGraphHeight: 420
 };
 
@@ -122,8 +120,8 @@ function onGettingCSV(error, rows) {
     else {
       var graphEl = d3.select('#graph').node();
       var lastBarX = 
-        Session.xAxisDateStrings.length * Settings.stackedBarWidth;
-      var panX = -lastBarX + graphEl.clientWidth - Settings.stackedBarWidth;
+        graphSession.xAxisDateStrings.length * graphSettings.stackedBarWidth;
+      var panX = -lastBarX + graphEl.clientWidth - graphSettings.stackedBarWidth;
 
       var xAxisGroup = graphGroup.select('.x.axis');
       var axisTransform = 
@@ -302,7 +300,7 @@ function getFillForLayerGroup(d) {
     debugger;
   }
 
-  if (Session.spotlightedLayer && Session.spotlightedLayer !== d) {
+  if (graphSession.spotlightedLayer && graphSession.spotlightedLayer !== d) {
     // Shade the color to make it darker.    
     calculated = d3.rgb(calculated).darker(3.5).toString();
   }

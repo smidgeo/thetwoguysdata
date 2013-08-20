@@ -6,6 +6,17 @@ var graphSession = {
   categoryFilter: null
 };
 
+var graphSettings = {
+  labelMargin: 6,  
+  stackedBarWidth: 100,
+  margin: {
+    top: 40, 
+    right: 10, 
+    bottom: 20, 
+    left: 10
+  }  
+}
+
 function isiPhone() {
   return navigator.userAgent.match(/(iPod|iPhone)/) && 
   navigator.userAgent.match(/AppleWebKit/)
@@ -103,7 +114,8 @@ function setUpGraph(stackData) {
     return columnArray[0].columnName;
   }
 
-  var width = m * Settings.stackedBarWidth - Settings.margin.left - Settings.margin.right;
+  var width = m * graphSettings.stackedBarWidth - 
+    graphSettings.margin.left - graphSettings.margin.right;
 
   // TODO: Media queries.
   var intendedHeight = '60%';
@@ -122,16 +134,17 @@ function setUpGraph(stackData) {
   var graphGroup = svg.select('g#graphGroup');
   if (graphGroup.empty()) {
     graphGroup = svg.append('g')
-      .attr('transform', 'translate(' + Settings.margin.left + ',' + 
-        Settings.margin.top + ')' + 
+      .attr('transform', 'translate(' + graphSettings.margin.left + ',' + 
+        graphSettings.margin.top + ')' + 
         ' scale(1)')
       .attr('id', 'graphGroup');
   }
 
   var height = 
-    d3.select('#graph').node().clientHeight - Settings.margin.top - Settings.margin.bottom;
-  if (height < Settings.minimumGraphHeight) {
-    height = Settings.minimumGraphHeight;
+    d3.select('#graph').node().clientHeight - graphSettings.margin.top - 
+      graphSettings.margin.bottom;
+  if (height < graphSettings.minimumGraphHeight) {
+    height = graphSettings.minimumGraphHeight;
   }
 
   var x = d3.scale.ordinal()
@@ -289,7 +302,7 @@ function setUpGraph(stackData) {
     allCellLabelsInGraph.transition()
       .duration(500)
       .transition()
-        .attr('x', function(d) { return x(d.x) + Settings.labelMargin; })
+        .attr('x', function(d) { return x(d.x) + graphSettings.labelMargin; })
         .attr('y', function(d) { 
           return getYOfStackedDatum(d) + getHeightOfStackedDatum(d)/2;
         })
@@ -305,7 +318,7 @@ function setUpGraph(stackData) {
           d3.select(this).append('tspan')
             .text(words[i])
             .attr({
-              x: x(d.x)  + Settings.labelMargin, // This is the parent <text>'s x.
+              x: x(d.x)  + graphSettings.labelMargin, // This is the parent <text>'s x.
               dy: i * 16
             });
         }
